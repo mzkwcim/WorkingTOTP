@@ -13,19 +13,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user && password_verify($password, $user['password'])) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $username;
-
-        if ($user['totp_verified'] == 0) {
-            echo '<form id="redirectForm" method="post" action="verify.php">';
-            echo '<input type="hidden" name="secret" value="' . $user['secret'] . '">';
-            echo '<input type="hidden" name="username" value="' . htmlspecialchars($username) . '">';
-            echo '<input type="hidden" name="password" value="' . htmlspecialchars($password) . '">';
-            echo '</form>';
-            echo '<script>document.getElementById("redirectForm").submit();</script>';
-            exit();
-        } else {
-            header("Location: dashboard.php");
-            exit();
-        }
+        echo '<form id="redirectForm" method="post" action="verify_login_totp.php">';
+        echo '<input type="hidden" name="secret" value="' . $user['secret'] . '">';
+        echo '<input type="hidden" name="username" value="' . htmlspecialchars($username) . '">';
+        echo '<input type="hidden" name="password" value="' . htmlspecialchars($password) . '">';
+        echo '</form>';
+        echo '<script>document.getElementById("redirectForm").submit();</script>';
+         exit();
     } else {
         $error = "Nieprawidłowe dane logowania";
     }
