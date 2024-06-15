@@ -26,6 +26,7 @@ $user_account = $stmt->fetch();
 $balance = $user_account['balance'];
 ?>
 
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -34,9 +35,9 @@ $balance = $user_account['balance'];
     <link rel="stylesheet" href="css/styles.css">
     <style>
         .container {
-            width: 100%;
+            width: 95%;
             margin: 0 auto;
-            max-width: 1200px; /* Set a maximum width */
+            max-width: 1200px;
         }
 
         .balance {
@@ -65,35 +66,32 @@ $balance = $user_account['balance'];
             margin: 20px 0;
         }
 
-        .transactions-table th, .transactions-table td {
-            border: 1px solid #ddd;
+        .transaction-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 8px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .transaction-row:hover {
+            background-color: #f9f9f9;
+        }
+
+        .transaction-name {
+            flex: 1;
             text-align: left;
-            white-space: nowrap; /* Ensure that content does not wrap */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .transactions-table th {
-            background-color: #f2f2f2;
-        }
-
-        .transactions-table td:nth-child(1) {
-            width: 15%;
-        }
-
-        .transactions-table td:nth-child(2) {
-            width: 20%;
-        }
-
-        .transactions-table td:nth-child(3) {
-            width: 20%;
-        }
-
-        .transactions-table td:nth-child(4) {
-            width: 30%;
-        }
-
-        .transactions-table td:nth-child(5) {
-            width: 15%;
+        .transaction-amount {
+            flex: 0;
+            width: 150px;
+            text-align: right;
+            white-space: nowrap;
         }
 
         .transaction-outgoing {
@@ -103,7 +101,32 @@ $balance = $user_account['balance'];
         .transaction-incoming {
             color: green;
         }
+
+        .transaction-details {
+            display: none;
+            padding: 8px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+        }
+
+        .transaction-details p {
+            margin: 0;
+            padding: 4px 0;
+            color: black;
+            text-align: left;
+        }
+
+        .transaction-details p strong {
+            color: black;
+        }
     </style>
+    <script>
+        function toggleDetails(transactionId) {
+            const details = document.getElementById('details-' + transactionId);
+            details.style.display = details.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -124,31 +147,30 @@ $balance = $user_account['balance'];
             </form>
         </div>
         <h3>Historia transakcji</h3>
-        <table class="transactions-table">
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Nadawca</th>
-                    <th>Odbiorca</th>
-                    <th>Tytuł</th>
-                    <th>Kwota</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($transactions as $transaction): ?>
-                    <tr>
-                        <td><?php echo $transaction['transfer_date']; ?></td>
-                        <td><?php echo $transaction['sender_name']; ?></td>
-                        <td><?php echo $transaction['recipient_name']; ?></td>
-                        <td><?php echo $transaction['transfer_title']; ?></td>
-                        <td class="<?php echo $transaction['transfer_type'] == 'outgoing' ? 'transaction-outgoing' : 'transaction-incoming'; ?>">
-                            <?php echo $transaction['transfer_type'] == 'outgoing' ? '-' : ''; ?>
-                            <?php echo number_format($transaction['amount'], 2, ',', ' '); ?> zł
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <div class="transactions-table">
+            <?php foreach ($transactions as $transaction): ?>
+                <div class="transaction-row" onclick="toggleDetails(<?php echo $transaction['id']; ?>)">
+                    <div class="transaction-name">
+                        <?php 
+                        echo $transaction['transfer_type'] == 'outgoing' ? $transaction['recipient_name'] : $transaction['sender_name']; 
+                        ?>
+                    </div>
+                    <div class="transaction-amount <?php echo $transaction['transfer_type'] == 'outgoing' ? 'transaction-outgoing' : 'transaction-incoming'; ?>">
+                        <?php echo $transaction['transfer_type'] == 'outgoing' ? '-' : '+'; ?>
+                        <?php echo number_format($transaction['amount'], 2, ',', ' '); ?> zł
+                    </div>
+                </div>
+                <div id="details-<?php echo $transaction['id']; ?>" class="transaction-details">
+                    <p><strong>Kwota:</strong> <?php echo number_format($transaction['amount'], 2, ',', ' '); ?> zł</p>
+                    <p><strong><?php echo $transaction['transfer_type'] == 'outgoing' ? 'Odbiorca' : 'Nadawca'; ?>:</strong> 
+                        <?php 
+                        echo $transaction['transfer_type'] == 'outgoing' ? $transaction['recipient_name'] : $transaction['sender_name']; 
+                        ?>
+                    </p>
+                    <p><strong>Data transakcji:</strong> <?php echo $transaction['transfer_date']; ?></p>
+                </div>
+            <?php endforeach; ?>
+        </div>
     </div>
 </body>
 </html>
