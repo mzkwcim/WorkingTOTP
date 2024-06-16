@@ -9,23 +9,45 @@ require 'db.php';
 
 $user_id = $_SESSION['user_id'];
 
-// Pobierz historię transakcji użytkownika (zarówno wysłane, jak i otrzymane)
-$stmt = $pdo->prepare("SELECT t.*, 
-    (CASE WHEN t.user_id = :user_id THEN 'outgoing' ELSE 'incoming' END) AS transfer_type
-    FROM transfers t 
-    LEFT JOIN userAccount ua ON t.recipient_account = ua.account_number 
-    WHERE t.user_id = :user_id OR ua.user_id = :user_id
-    ORDER BY t.transfer_date DESC");
-$stmt->execute(['user_id' => $user_id]);
-$transactions = $stmt->fetchAll();
+// Pobierz informacje o użytkowniku
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+$stmt->execute([$user_id]);
+$user = $stmt->fetch();
 
-// Pobierz saldo konta użytkownika
-$stmt = $pdo->prepare("SELECT balance FROM userAccount WHERE user_id = ?");
+if (!$user) {
+    echo "Błąd: Nie znaleziono użytkownika.";
+    exit();
+}
+
+$role = $user['role'];
+
+// Pobierz saldo konta i numer konta użytkownika
+$stmt = $pdo->prepare("SELECT balance, account_number FROM userAccount WHERE user_id = ?");
 $stmt->execute([$user_id]);
 $user_account = $stmt->fetch();
-$balance = $user_account['balance'];
-?>
 
+if (!$user_account) {
+    echo "Błąd: Nie znaleziono konta użytkownika.";
+    exit();
+}
+
+$balance = $user_account['balance'];
+$account_number = $user_account['account_number'];
+
+
+// Pobierz historię transakcji użytkownika (zarówno wysłane, jak i otrzymane)
+$stmt = $pdo->prepare("
+    SELECT t.*, 
+           (CASE WHEN t.sender_account = :account_number THEN 'outgoing' ELSE 'incoming' END) AS transfer_type
+    FROM transfers t
+    WHERE t.sender_account = :account_number OR t.recipient_account = :account_number
+    ORDER BY t.transfer_date DESC
+");
+$stmt->execute(['account_number' => $account_number]);
+$transactions = $stmt->fetchAll();
+
+
+?>
 
 <!DOCTYPE html>
 <html lang="pl">
@@ -142,34 +164,48 @@ $balance = $user_account['balance'];
             <form action="settings.php">
                 <button type="submit">Ustawienia</button>
             </form>
+            <?php if ($role == 'admin'): ?>
+                <form action="manage_users.php">
+                    <button type="submit">Zarządzanie użytkownikami</button>
+                </form>
+            <?php endif; ?>
+            <?php if ($role == 'auditor'): ?>
+                <form action="all_operations.php">
+                    <button type="submit">Wszystkie operacje</button>
+                </form>
+            <?php endif; ?>
             <form action="logout.php">
                 <button type="submit">Wyloguj się</button>
             </form>
         </div>
         <h3>Historia transakcji</h3>
         <div class="transactions-table">
-            <?php foreach ($transactions as $transaction): ?>
-                <div class="transaction-row" onclick="toggleDetails(<?php echo $transaction['id']; ?>)">
-                    <div class="transaction-name">
-                        <?php 
-                        echo $transaction['transfer_type'] == 'outgoing' ? $transaction['recipient_name'] : $transaction['sender_name']; 
-                        ?>
+            <?php if (empty($transactions)): ?>
+                <p>Brak transakcji do wyświetlenia.</p>
+            <?php else: ?>
+                <?php foreach ($transactions as $transaction): ?>
+                    <div class="transaction-row" onclick="toggleDetails(<?php echo $transaction['id']; ?>)">
+                        <div class="transaction-name">
+                            <?php 
+                            echo htmlspecialchars($transaction['transfer_type'] == 'outgoing' ? $transaction['recipient_name'] : $transaction['sender_name']); 
+                            ?>
+                        </div>
+                        <div class="transaction-amount <?php echo $transaction['transfer_type'] == 'outgoing' ? 'transaction-outgoing' : 'transaction-incoming'; ?>">
+                            <?php echo $transaction['transfer_type'] == 'outgoing' ? '-' : '+'; ?>
+                            <?php echo number_format($transaction['amount'], 2, ',', ' '); ?> zł
+                        </div>
                     </div>
-                    <div class="transaction-amount <?php echo $transaction['transfer_type'] == 'outgoing' ? 'transaction-outgoing' : 'transaction-incoming'; ?>">
-                        <?php echo $transaction['transfer_type'] == 'outgoing' ? '-' : '+'; ?>
-                        <?php echo number_format($transaction['amount'], 2, ',', ' '); ?> zł
+                    <div id="details-<?php echo $transaction['id']; ?>" class="transaction-details">
+                        <p><strong>Kwota:</strong> <?php echo number_format($transaction['amount'], 2, ',', ' '); ?> zł</p>
+                        <p><strong>Nadawca:</strong> <?php echo htmlspecialchars($transaction['sender_name']); ?></p>
+                        <p><strong>Odbiorca:</strong> <?php echo htmlspecialchars($transaction['recipient_name']); ?></p>
+                        <p><strong>Numer konta nadawcy:</strong> <?php echo htmlspecialchars($transaction['sender_account']); ?></p>
+                        <p><strong>Numer konta odbiorcy:</strong> <?php echo htmlspecialchars($transaction['recipient_account']); ?></p>
+                        <p><strong>Tytuł przelewu:</strong> <?php echo htmlspecialchars($transaction['transfer_title']); ?></p>
+                        <p><strong>Data transakcji:</strong> <?php echo htmlspecialchars($transaction['transfer_date']); ?></p>
                     </div>
-                </div>
-                <div id="details-<?php echo $transaction['id']; ?>" class="transaction-details">
-                    <p><strong>Kwota:</strong> <?php echo number_format($transaction['amount'], 2, ',', ' '); ?> zł</p>
-                    <p><strong><?php echo $transaction['transfer_type'] == 'outgoing' ? 'Odbiorca' : 'Nadawca'; ?>:</strong> 
-                        <?php 
-                        echo $transaction['transfer_type'] == 'outgoing' ? $transaction['recipient_name'] : $transaction['sender_name']; 
-                        ?>
-                    </p>
-                    <p><strong>Data transakcji:</strong> <?php echo $transaction['transfer_date']; ?></p>
-                </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </div>
 </body>

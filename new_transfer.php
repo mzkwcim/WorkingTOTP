@@ -20,8 +20,6 @@ $user_account = $stmt->fetch();
 
 $sender_name = $user['first_name'] . ' ' . $user['last_name'];
 $sender_account = $user_account['account_number'];
-$transaction_limit = $user_account['transaction_limit'];
-$current_balance = $user_account['balance'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $recipient_name = htmlspecialchars($_POST['recipient_name']);
@@ -30,22 +28,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $amount = htmlspecialchars($_POST['amount']);
     $transfer_date = $_POST['transfer_date'];
 
+    // Sprawdź, czy kwota i numer konta są poprawne
     if ($amount <= 0) {
         $error = "Kwota musi być większa niż zero.";
-    } elseif ($amount > $transaction_limit) {
-        $error = "Kwota transakcji przekracza limit jednorazowej transakcji.";
-    } elseif ($amount > $current_balance) {
-        $error = "Niewystarczające środki na koncie.";
     } elseif (!preg_match('/^PL\d{26}$/', $recipient_account)) {
         $error = "Numer konta musi zaczynać się od 'PL' i mieć 26 cyfr.";
     } else {
-        // Przekieruj do strony potwierdzenia hasła
-        $_SESSION['recipient_name'] = $recipient_name;
-        $_SESSION['recipient_account'] = $recipient_account;
-        $_SESSION['transfer_title'] = $transfer_title;
-        $_SESSION['amount'] = $amount;
-        $_SESSION['transfer_date'] = $transfer_date;
-        header("Location: confirm_password.php");
+        // Zapisywanie transakcji
+        $stmt = $pdo->prepare("INSERT INTO transfers (user_id, sender_name, sender_account, recipient_name, recipient_account, transfer_title, amount, transfer_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$user_id, $sender_name, $sender_account, $recipient_name, $recipient_account, $transfer_title, $amount, $transfer_date]);
+
+        // Zaktualizuj saldo nadawcy
+        $stmt = $pdo->prepare("UPDATE userAccount SET balance = balance - ? WHERE user_id = ?");
+        $stmt->execute([$amount, $user_id]);
+
+        // Zaktualizuj saldo odbiorcy
+        $stmt = $pdo->prepare("UPDATE userAccount SET balance = balance + ? WHERE account_number = ?");
+        $stmt->execute([$amount, $recipient_account]);
+
+        header("Location: dashboard.php");
         exit();
     }
 }
@@ -105,8 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit">Wyślij przelew</button>
             <?php if (isset($error)): ?>
                 <p><?php echo $error; ?></p>
-            <?php elseif (isset($success)): ?>
-                <p><?php echo $success; ?></p>
             <?php endif; ?>
         </form>
     </div>

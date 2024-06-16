@@ -1,6 +1,6 @@
 <?php
-require 'db.php';
 session_start();
+require 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
@@ -11,15 +11,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $stmt->fetch();
 
     if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['username'] = $username;
-        echo '<form id="redirectForm" method="post" action="verify_login_totp.php">';
-        echo '<input type="hidden" name="secret" value="' . $user['secret'] . '">';
-        echo '<input type="hidden" name="username" value="' . htmlspecialchars($username) . '">';
-        echo '<input type="hidden" name="password" value="' . htmlspecialchars($password) . '">';
-        echo '</form>';
-        echo '<script>document.getElementById("redirectForm").submit();</script>';
-         exit();
+        if ($user['password_reset_required']) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['reset_password'] = true;
+            header("Location: reset_password.php");
+            exit();
+        } else {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['role'] = $user['role'];
+            echo '<form id="redirectForm" method="post" action="verify_login_totp.php">';
+            echo '<input type="hidden" name="secret" value="' . $user['secret'] . '">';
+            echo '<input type="hidden" name="username" value="' . htmlspecialchars($username) . '">';
+            echo '<input type="hidden" name="password" value="' . htmlspecialchars($password) . '">';
+            echo '</form>';
+            echo '<script>document.getElementById("redirectForm").submit();</script>';
+            exit();
+        }
     } else {
         $error = "Nieprawidłowe dane logowania";
     }
