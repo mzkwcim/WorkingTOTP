@@ -5,7 +5,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-require 'db.php';
+require '../db.php';
 
 $user_id = $_SESSION['user_id'];
 
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container">
         <div class="back-button-container">
-            <a href="dashboard.php" class="back-button">&lt;</a>
+            <a href="/2fatest/public/dashboard" class="back-button">&lt;</a>
         </div>
         <h2>Ustawienia</h2>
         <form method="post">

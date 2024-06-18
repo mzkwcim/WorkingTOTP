@@ -5,7 +5,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-require 'db.php';
+require '../db.php';
 
 $user_id = $_SESSION['user_id'];
 
@@ -96,7 +96,7 @@ $role = $user['role']; // Pobranie roli użytkownika
 </head>
 <body>
     <div class="container">
-        <a href="dashboard.php" class="back-button">&lt;</a>
+        <a href="/2fatest/public/dashboard" class="back-button">&lt;</a>
         <h2>Informacje o koncie</h2>
         <div class="info">
             <label>Numer konta:</label>

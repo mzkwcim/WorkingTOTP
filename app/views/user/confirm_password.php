@@ -6,7 +6,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require 'db.php';
+    require '../db.php';
     $user_id = $_SESSION['user_id'];
     $password = $_POST['password'];
 
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['transfer_title'] = $_POST['transfer_title'];
         $_SESSION['amount'] = $_POST['amount'];
         $_SESSION['transfer_date'] = $_POST['transfer_date'];
-        header("Location: confirm_transfer.php");
+        header("Location: /2fatest/public/confirm_transfer");
         exit();
     } else {
         $error = "Nieprawidłowe hasło.";

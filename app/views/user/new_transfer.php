@@ -1,25 +1,22 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: /2fatest/public/login");
     exit();
 }
 
-require 'db.php';
+require '../db.php';
 
 $user_id = $_SESSION['user_id'];
 
 // Pobierz informacje o nadawcy
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+$stmt = $pdo->prepare("SELECT u.first_name, u.last_name, ua.account_number, ua.transaction_limit FROM users u JOIN userAccount ua ON u.id = ua.user_id WHERE u.id = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch();
 
-$stmt = $pdo->prepare("SELECT * FROM userAccount WHERE user_id = ?");
-$stmt->execute([$user_id]);
-$user_account = $stmt->fetch();
-
 $sender_name = $user['first_name'] . ' ' . $user['last_name'];
-$sender_account = $user_account['account_number'];
+$sender_account = $user['account_number'];
+$transaction_limit = $user['transaction_limit'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $recipient_name = htmlspecialchars($_POST['recipient_name']);
@@ -28,25 +25,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $amount = htmlspecialchars($_POST['amount']);
     $transfer_date = $_POST['transfer_date'];
 
-    // Sprawdź, czy kwota i numer konta są poprawne
     if ($amount <= 0) {
         $error = "Kwota musi być większa niż zero.";
+    } elseif ($amount > $transaction_limit) {
+        $error = "Kwota przekracza limit jednorazowej transakcji wynoszący " . number_format($transaction_limit, 2, ',', ' ') . " zł.";
     } elseif (!preg_match('/^PL\d{26}$/', $recipient_account)) {
         $error = "Numer konta musi zaczynać się od 'PL' i mieć 26 cyfr.";
     } else {
-        // Zapisywanie transakcji
-        $stmt = $pdo->prepare("INSERT INTO transfers (user_id, sender_name, sender_account, recipient_name, recipient_account, transfer_title, amount, transfer_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$user_id, $sender_name, $sender_account, $recipient_name, $recipient_account, $transfer_title, $amount, $transfer_date]);
-
-        // Zaktualizuj saldo nadawcy
-        $stmt = $pdo->prepare("UPDATE userAccount SET balance = balance - ? WHERE user_id = ?");
-        $stmt->execute([$amount, $user_id]);
-
-        // Zaktualizuj saldo odbiorcy
-        $stmt = $pdo->prepare("UPDATE userAccount SET balance = balance + ? WHERE account_number = ?");
-        $stmt->execute([$amount, $recipient_account]);
-
-        header("Location: dashboard.php");
+        // Przekieruj do strony potwierdzenia hasła
+        $_SESSION['recipient_name'] = $recipient_name;
+        $_SESSION['recipient_account'] = $recipient_account;
+        $_SESSION['transfer_title'] = $transfer_title;
+        $_SESSION['amount'] = $amount;
+        $_SESSION['transfer_date'] = $transfer_date;
+        header("Location: /2fatest/public/confirm_password");
         exit();
     }
 }
@@ -57,13 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Nowy przelew</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var today = new Date().toISOString().split('T')[0];
-            document.getElementsByName("transfer_date")[0].setAttribute('min', today);
-        });
-    </script>
+    <link rel="stylesheet" href="/2fatest/public/css/styles.css">
     <style>
         .container {
             position: relative;
@@ -87,10 +73,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background-color: #e0e0e0;
         }
     </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var today = new Date().toISOString().split('T')[0];
+            document.getElementsByName("transfer_date")[0].setAttribute('min', today);
+        });
+    </script>
 </head>
 <body>
     <div class="container">
-        <a href="dashboard.php" class="back-button">&lt;</a>
+        <a href="/2fatest/public/dashboard" class="back-button">&lt;</a>
         <h2>Nowy przelew</h2>
         <form method="post">
             <label for="recipient_name">Odbiorca:</label>

@@ -1,6 +1,6 @@
 <?php
-require 'db.php';
-require 'vendor/autoload.php';
+require '../db.php';
+require '../vendor/autoload.php';
 
 use Sonata\GoogleAuthenticator\GoogleAuthenticator;
 use Sonata\GoogleAuthenticator\GoogleQrUrl;
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $qrCodeUrl = GoogleQrUrl::generate($username, $secret, 'TwojaFirma');
 
-            echo '<form id="redirectForm" method="post" action="verify.php">';
+            echo '<form id="redirectForm" method="post" action="/2fatest/app/views/verify.php">';
             echo '<input type="hidden" name="username" value="' . htmlspecialchars($username) . '">';
             echo '<input type="hidden" name="email" value="' . htmlspecialchars($email) . '">';
             echo '<input type="hidden" name="password" value="' . htmlspecialchars($password) . '">';
@@ -76,26 +76,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Rejestracja</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="js/validation.js" defer></script>
+    <link rel="stylesheet" href="/2fatest/public/css/styles.css">
+    <style>
+        .back-button {
+            display: inline-block;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+            margin-bottom: 10px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10; /* Ensure button is above other elements */
+        }
+        .back-button:hover {
+            background-color: #e0e0e0;
+        }
+        .form-container {
+            text-align: center;
+            position: relative;
+        }
+        .form-container h2 {
+            text-align: center;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            position: relative;
+        }
+    </style>
+    <script>
+        function validateForm() {
+            var password = document.forms["registerForm"]["password"].value;
+            var confirmPassword = document.forms["registerForm"]["password_confirm"].value;
+            if (password !== confirmPassword) {
+                alert("Hasła nie są zgodne.");
+                return false;
+            }
+            return true;
+        }
+    </script>
 </head>
 <body>
     <div class="container">
-        <form method="post" id="registrationForm">
+        <a href="/2fatest/public/" class="back-button">&lt; Wróć</a>
+        <div class="form-container">
             <h2>Rejestracja</h2>
-            <input type="text" name="username" placeholder="Nazwa użytkownika" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Hasło" required>
-            <input type="password" name="password_confirm" placeholder="Potwierdź hasło" required>
-            <input type="text" name="first_name" placeholder="Imię" required>
-            <input type="text" name="last_name" placeholder="Nazwisko" required>
-            <label for="birth_date">Data urodzenia:</label>
-            <input type="date" name="birth_date" required>
-            <button type="submit">Zarejestruj się</button>
-            <?php if (isset($error)): ?>
-                <p><?php echo $error; ?></p>
-            <?php endif; ?>
-        </form>
+            <form name="registerForm" method="post" onsubmit="return validateForm()">
+                <input type="text" name="username" placeholder="Nazwa użytkownika" required>
+                <input type="password" name="password" placeholder="Hasło" required>
+                <input type="password" name="password_confirm" placeholder="Potwierdź hasło" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" name="first_name" placeholder="Imię" required>
+                <input type="text" name="last_name" placeholder="Nazwisko" required>
+                <input type="date" name="birth_date" placeholder="Data urodzenia" required>
+                <button type="submit">Zarejestruj się</button>
+                <?php if (isset($error)): ?>
+                    <p><?php echo $error; ?></p>
+                <?php endif; ?>
+            </form>
+        </div>
     </div>
 </body>
 </html>

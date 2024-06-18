@@ -6,7 +6,7 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['recipient_name'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require 'db.php';
+    require '../db.php';
     $user_id = $_SESSION['user_id'];
     $recipient_name = $_SESSION['recipient_name'];
     $recipient_account = $_SESSION['recipient_account'];
@@ -53,13 +53,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Zatwierdź transakcję
             $pdo->commit();
             if ($amount == 69){
-                header("Location: zboczuch.php");
+                header("Location: /2fatest/public/zboczuch");
             } elseif($amount == 420){
-                header("Location: parararara.php");
-            } elseif($amount = 2137){
-                header("Location: papaj.php");
+                header("Location: /2fatest/public/parararara");
+            } elseif($amount == 2137){
+                header("Location: /2fatest/public/papaj");
             } else {
-                header("Location: dashboard.php");
+                header("Location: /2fatest/public/dashboard");
             }
             exit();
         } catch (Exception $e) {

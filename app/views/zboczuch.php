@@ -23,8 +23,8 @@
     <div class="container">
         <div class="title">Zboczuch</div>
         <img src="images/Ivan.png" alt="Zboczuch" class="image">
-        <form action="dashboard.php">
-            <button type="submit">Zabierzcie mnie stąd</button>
+        <form action="/2fatest/public/dashboard">
+            <button type="submit" class="back-button">Zabierzcie mnie stąd</button>
         </form>
     </div>
 </body>

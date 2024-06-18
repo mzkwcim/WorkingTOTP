@@ -1,7 +1,7 @@
 <?php
 session_start();
-require 'db.php';
-require 'vendor/autoload.php';
+require '../../db.php';
+require '../../vendor/autoload.php';
 use Sonata\GoogleAuthenticator\GoogleQrUrl;
 use Sonata\GoogleAuthenticator\GoogleAuthenticator;
 
@@ -81,22 +81,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Weryfikacja</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/2fatest/public/css/styles.css">
+    <style>
+        .back-button {
+            display: inline-block;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+            margin-bottom: 10px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10; /* Ensure button is above other elements */
+        }
+        .back-button:hover {
+            background-color: #e0e0e0;
+        }
+        .form-container {
+            text-align: center;
+            position: relative;
+        }
+        .form-container h2 {
+            text-align: center;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            position: relative;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h2>Zeskanuj ten kod QR za pomocą Google Authenticator</h2>
-        <div class="qr-code">
-            <img src="<?php echo htmlspecialchars($qrCodeUrl); ?>" alt="Kod QR">
+        <a href="/2fatest/public/" class="back-button">&lt;</a>
+        <div class="form-container">
+            <h2>Zeskanuj ten kod QR za pomocą Google Authenticator</h2>
+            <div class="qr-code">
+                <img src="<?php echo htmlspecialchars($qrCodeUrl); ?>" alt="Kod QR">
+            </div>
+            <form method="post">
+                <label for="totp_code">Kod TOTP</label>
+                <input type="text" name="totp_code" placeholder="Wprowadź kod TOTP" required>
+                <button type="submit">Zweryfikuj</button>
+                <?php if (isset($error)): ?>
+                    <p><?php echo $error; ?></p>
+                <?php endif; ?>
+            </form>
         </div>
-        <form method="post">
-            <label for="totp_code">Kod TOTP</label>
-            <input type="text" name="totp_code" placeholder="Wprowadź kod TOTP" required>
-            <button type="submit">Zweryfikuj</button>
-            <?php if (isset($error)): ?>
-                <p><?php echo $error; ?></p>
-            <?php endif; ?>
-        </form>
     </div>
 </body>
 </html>
