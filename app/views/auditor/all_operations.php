@@ -1,67 +1,13 @@
-<?php
-
-
-require '../db.php';
-
-// Pobierz wszystkie transakcje
-$stmt = $pdo->query("SELECT * FROM transfers ORDER BY transfer_date DESC");
-$transfers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <title>Wszystkie operacje</title>
     <link rel="stylesheet" href="/2fatest/public/css/styles.css">
-    <style>
-        .container {
-            width: 90%;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            background-color: #f9f9f9;
-            overflow-x: auto; /* Dodano przewijanie poziome */
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-            word-wrap: break-word;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .back-button {
-            display: inline-block;
-            margin-bottom: 10px;
-            padding: 10px 20px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            text-decoration: none;
-            color: #000;
-            font-weight: bold;
-        }
-
-        .back-button:hover {
-            background-color: #e0e0e0;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
-        <a href="/2fatest/public/dashboard" class="back-button">&lt; Wróć</a>
+        <a href="/2fatest/dashboard" class="back-button">&lt;</a>
         <h2>Wszystkie operacje</h2>
         <table>
             <thead>

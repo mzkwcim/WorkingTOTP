@@ -1,21 +1,3 @@
-<?php
-
-
-require '../db.php';
-
-// Pobierz wszystkich użytkowników
-$stmt = $pdo->query("SELECT id, username, email, first_name, last_name, role FROM users");
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
-    $user_id = $_POST['reset_password'];
-    $stmt = $pdo->prepare("UPDATE users SET password_reset_required = 1 WHERE id = ?");
-    $stmt->execute([$user_id]);
-    header("Location: /2fatest/public/manage_users");
-    exit();
-}
-?>
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -68,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
 </head>
 <body>
     <div class="container">
-        <a href="/2fatest/public/dashboard" class="back-button">&lt; Wróć</a>
+        <a href="/2fatest/dashboard" class="back-button">&lt;</a>
         <h2>Zarządzanie użytkownikami</h2>
         <table>
             <thead>
@@ -92,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
                     <td><?php echo htmlspecialchars($user['last_name']); ?></td>
                     <td><?php echo htmlspecialchars($user['role']); ?></td>
                     <td>
-                        <form method="post">
+                        <form method="post" action="/2fatest/public/reset_password">
                             <button type="submit" name="reset_password" value="<?php echo htmlspecialchars($user['id']); ?>">Resetuj hasło</button>
                         </form>
                     </td>

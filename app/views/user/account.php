@@ -1,35 +1,9 @@
-<?php
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
-require '../db.php';
-
-$user_id = $_SESSION['user_id'];
-
-// Pobierz informacje o użytkowniku
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-$stmt->execute([$user_id]);
-$user = $stmt->fetch();
-
-$stmt = $pdo->prepare("SELECT * FROM userAccount WHERE user_id = ?");
-$stmt->execute([$user_id]);
-$user_account = $stmt->fetch();
-
-$full_name = $user['first_name'] . ' ' . $user['last_name'];
-$email = $user['email'];
-$account_number = $user_account['account_number'];
-$role = $user['role']; // Pobranie roli użytkownika
-?>
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <title>Informacje o koncie</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/2fatest/public/css/styles.css">
     <style>
         .container {
             position: relative;
@@ -96,23 +70,23 @@ $role = $user['role']; // Pobranie roli użytkownika
 </head>
 <body>
     <div class="container">
-        <a href="/2fatest/public/dashboard" class="back-button">&lt;</a>
+        <a href="/2fatest/dashboard" class="back-button">&lt;</a>
         <h2>Informacje o koncie</h2>
         <div class="info">
             <label>Numer konta:</label>
-            <span><?php echo $account_number; ?></span>
+            <span><?php echo htmlspecialchars($account_number); ?></span>
         </div>
         <div class="info">
             <label>Imię i nazwisko:</label>
-            <span><?php echo $full_name; ?></span>
+            <span><?php echo htmlspecialchars($full_name); ?></span>
         </div>
         <div class="info">
             <label>Email:</label>
-            <span><?php echo $email; ?></span>
+            <span><?php echo htmlspecialchars($email); ?></span>
         </div>
         <div class="info">
             <label>Rola:</label>
-            <span><?php echo $role; ?></span>
+            <span><?php echo htmlspecialchars($role); ?></span>
         </div>
         <button class="mysterious-button" onclick="mysteriousFunction()">Czy Pies</button>
     </div>

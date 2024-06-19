@@ -1,5 +1,10 @@
 RewriteEngine On
-RewriteBase /2fatest/public/
+
+# Przekieruj wszystko do index.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+RewriteRule ^(.*)$ index.php?uri=$1 [L,QSA]
+
+# Zezwól na bezpośredni dostęp do plików w folderze public
+RewriteCond %{REQUEST_URI} ^/2fatest/public/
+RewriteRule ^(.*)$ - [L]
