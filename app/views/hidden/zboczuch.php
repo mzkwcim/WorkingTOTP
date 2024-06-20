@@ -22,8 +22,8 @@
 <body>
     <div class="container">
         <div class="title">Zboczuch</div>
-        <img src="/2fatest/public/images/Ivan.png" alt="Zboczuch" class="image">
-        <form action="/2fatest/dashboard">
+        <img src="/2fatest/images/Ivan.png" alt="Zboczuch" class="image">
+        <form action="/2fatest/dashboard" method="get">
             <button type="submit" class="back-button">Zabierzcie mnie stąd</button>
         </form>
     </div>

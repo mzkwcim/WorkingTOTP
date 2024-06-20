@@ -1,30 +1,45 @@
 <?php
 use Sonata\GoogleAuthenticator\GoogleAuthenticator;
+use Sonata\GoogleAuthenticator\GoogleQrUrl;
+
 class LoginAndVerifyController extends Controller {
+    private $userModel;
+
+    public function __construct() {
+        $pdo = require __DIR__ . '/../../../db.php';
+        require_once __DIR__ . '/../../../app/models/UserProfile.php';
+        $this->userModel = new UserProfile($pdo);
+    }
+
     public function login() {
-        $this->view('login'); // Zaktualizowano ścieżkę do widoku login
+        $this->view('login');
     }
 
     public function handleLogin() {
-        session_start();
-        require '../db.php';
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            session_start();
+            $username = $_POST['username'];
+            $password = $_POST['password'];
 
-        $username = $_POST['username'];
-        $password = $_POST['password'];
+            $user = $this->userModel->getUserByUsername($username);
 
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
-        $stmt->execute([$username]);
-        $user = $stmt->fetch();
+            if ($user && password_verify($password, $user['password'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $username;
+                $_SESSION['secret'] = $user['secret'];
 
-        if ($user && password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['role'] = $user['role'];
-
-            header("Location: /verify_login_totp");
-        } else {
-            $error = "Invalid username or password.";
-            $this->view('login', ['error' => $error]); // Zaktualizowano ścieżkę do widoku login
+                // Sprawdź, czy użytkownik musi zresetować hasło
+                if ($user['password_reset_required'] == 1) {
+                    header("Location: /2fatest/reset_password");
+                    exit();
+                } else {
+                    header("Location: /2fatest/verify_login_totp");
+                    exit();
+                }
+            } else {
+                $error = "Nieprawidłowe dane logowania";
+                $this->view('login', ['error' => $error]);
+            }
         }
     }
 
@@ -33,29 +48,20 @@ class LoginAndVerifyController extends Controller {
     }
 
     public function handleVerifyLoginTotp() {
-        session_start();
-        require '../db.php';
-        require '../vendor/autoload.php';
-
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            session_start();
             $totp_code = $_POST['totp_code'];
             $user_id = $_SESSION['user_id'];
 
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-            $stmt->execute([$user_id]);
-            $user = $stmt->fetch();
+            $user = $this->userModel->getUserById($user_id);
+            $g = new GoogleAuthenticator();
 
-            if ($user) {
-                $g = new GoogleAuthenticator();
-                if ($g->checkCode($user['secret'], $totp_code)) {
-                    header("Location: /dashboard");
-                } else {
-                    $error = "Invalid TOTP code.";
-                    $this->view('verify_login_totp', ['error' => $error]);
-                }
+            if ($user && $g->checkCode($user['secret'], $totp_code)) {
+                header("Location: /2fatest/dashboard");
+                exit();
             } else {
-                header("Location: /login");
+                $error = "Nieprawidłowy kod TOTP";
+                $this->view('verify_login_totp', ['error' => $error]);
             }
         }
     }

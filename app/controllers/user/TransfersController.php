@@ -2,14 +2,21 @@
 
 class TransfersController extends Controller {
     private $transferModel;
-    private $userModel;
+    private $userProfileModel;
+    private $userAccountModel;
+    private $userAuthenticationModel;
 
     public function __construct() {
-        $pdo = require '../db.php';
-        require_once '../models/Transfer.php';
-        require_once '../models/User.php';
+        $pdo = require __DIR__ . '/../../../db.php';
+        require_once __DIR__ . '/../../../app/models/Transfer.php';
+        require_once __DIR__ . '/../../../app/models/UserProfile.php';
+        require_once __DIR__ . '/../../../app/models/UserAccount.php'; // Dodanie załadowania UserAccount
+        require_once __DIR__ . '/../../../app/models/UserAuthentication.php';
+
         $this->transferModel = new Transfer($pdo);
-        $this->userModel = new User($pdo);
+        $this->userProfileModel = new UserProfile($pdo);
+        $this->userAccountModel = new UserAccount($pdo); // Inicjalizacja UserAccount
+        $this->userAuthenticationModel = new UserAuthentication($pdo);
     }
 
     public function newTransfer() {
@@ -21,8 +28,8 @@ class TransfersController extends Controller {
 
         $user_id = $_SESSION['user_id'];
 
-        $user = $this->userModel->getUserById($user_id);
-        $user_account = $this->userModel->getUserAccountByUserId($user_id);
+        $user = $this->userProfileModel->getUserById($user_id);
+        $user_account = $this->userAccountModel->getUserAccountByUserId($user_id);
 
         $sender_name = $user['first_name'] . ' ' . $user['last_name'];
         $sender_account = $user_account['account_number'];
@@ -43,7 +50,7 @@ class TransfersController extends Controller {
         }
 
         $user_id = $_SESSION['user_id'];
-        $transaction_limit = $this->userModel->getTransactionLimit($user_id);
+        $transaction_limit = $this->userAccountModel->getTransactionLimit($user_id);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $recipient_name = htmlspecialchars($_POST['recipient_name']);
@@ -96,7 +103,7 @@ class TransfersController extends Controller {
             $user_id = $_SESSION['user_id'];
             $password = $_POST['password'];
 
-            if ($this->userModel->verifyPassword($user_id, $password)) {
+            if ($this->userAuthenticationModel->verifyPassword($user_id, $password)) {
                 header("Location: /2fatest/confirm_transfer");
                 exit();
             } else {
@@ -136,13 +143,13 @@ class TransfersController extends Controller {
         $amount = $_SESSION['amount'];
         $transfer_date = $_SESSION['transfer_date'];
 
-        $user = $this->userModel->getUserById($user_id);
-        $user_account = $this->userModel->getUserAccountByUserId($user_id);
+        $user = $this->userProfileModel->getUserById($user_id);
+        $user_account = $this->userAccountModel->getUserAccountByUserId($user_id);
 
         $sender_name = $user['first_name'] . ' ' . $user['last_name'];
         $sender_account = $user_account['account_number'];
 
-        if (!$this->userModel->accountExists($recipient_account)) {
+        if (!$this->userAccountModel->accountExists($recipient_account)) {
             $error = "Numer konta odbiorcy nie istnieje.";
             $this->view('user/confirm_transfer', ['error' => $error]);
         } else {

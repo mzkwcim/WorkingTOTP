@@ -1,6 +1,20 @@
 <?php
 
 class UserController extends Controller {
+    private $userModel;
+    private $accountModel;
+    private $authModel;
+
+    public function __construct() {
+        $pdo = require __DIR__ . '/../../../db.php';
+        require_once __DIR__ . '/../../../app/models/UserProfile.php';
+        require_once __DIR__ . '/../../../app/models/UserAccount.php';
+        require_once __DIR__ . '/../../../app/models/UserAuthentication.php';
+        $this->userModel = new UserProfile($pdo);
+        $this->accountModel = new UserAccount($pdo);
+        $this->authModel = new UserAuthentication($pdo);
+    }
+
     public function dashboard() {
         session_start();
         if (!isset($_SESSION['user_id'])) {
@@ -8,48 +22,61 @@ class UserController extends Controller {
             exit();
         }
 
-        require '../db.php';
         $user_id = $_SESSION['user_id'];
+        $user = $this->userModel->getUserById($user_id);
 
-        // Pobierz dane użytkownika
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-        $stmt->execute([$user_id]);
-        $user = $stmt->fetch();
+        if ($user['password_reset_required']) {
+            header("Location: /2fatest/reset_password");
+            exit();
+        }
 
-        if (!$user) {
+        $user_details = $this->userModel->getFullUserDetails($user_id);
+        $balance_details = $this->accountModel->getUserBalance($user_id);
+        $transactions = $this->accountModel->getUserTransactions($balance_details['account_number']);
+
+        $this->view('user/dashboard', [
+            'balance' => $balance_details['balance'],
+            'transactions' => $transactions,
+            'role' => $user_details['role']
+        ]);
+    }
+
+    public function resetPasswordForm() {
+        $this->view('user/reset_password');
+    }
+
+    public function handleResetPassword() {
+        session_start();
+        if (!isset($_SESSION['user_id'])) {
             header("Location: /2fatest/login");
             exit();
         }
 
-        $role = $user['role'];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $user_id = $_SESSION['user_id'];
+            $new_password = $_POST['new_password'];
+            $confirm_password = $_POST['confirm_password'];
 
-        // Pobierz saldo konta użytkownika
-        $stmt = $pdo->prepare("SELECT balance, account_number FROM userAccount WHERE user_id = ?");
-        $stmt->execute([$user_id]);
-        $user_account = $stmt->fetch();
-        $balance = $user_account['balance'];
-        $account_number = $user_account['account_number'];
+            if ($new_password !== $confirm_password) {
+                $error = "Hasła muszą się zgadzać.";
+                $this->view('user/reset_password', ['error' => $error]);
+                return;
+            }
 
-        // Pobierz historię transakcji użytkownika (zarówno wysłane, jak i otrzymane)
-        $stmt = $pdo->prepare("SELECT t.*, 
-            (CASE WHEN t.sender_account = :account_number THEN 'outgoing' ELSE 'incoming' END) AS transfer_type
-            FROM transfers t 
-            WHERE t.sender_account = :account_number OR t.recipient_account = :account_number
-            ORDER BY t.transfer_date DESC");
-        $stmt->execute(['account_number' => $account_number]);
-        $transactions = $stmt->fetchAll();
+            $this->authModel->updatePassword($user_id, $new_password);
 
-        $this->view('user/dashboard', [
-            'balance' => $balance,
-            'transactions' => $transactions,
-            'role' => $role
-        ]);
+            session_destroy();
+            session_start();
+            $_SESSION['message'] = "Twoje hasło zostało zresetowane poprawnie.";
+            header("Location: /2fatest/login");
+            exit();
+        }
     }
 
     public function logout() {
         session_start();
         session_destroy();
-        header("Location: /2fatest/login");
+        header("Location: /2fatest");
         exit();
     }
 }

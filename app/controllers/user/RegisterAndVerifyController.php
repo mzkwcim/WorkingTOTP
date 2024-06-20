@@ -1,13 +1,21 @@
 <?php
+
 use Sonata\GoogleAuthenticator\GoogleAuthenticator;
 use Sonata\GoogleAuthenticator\GoogleQrUrl;
 
 class RegisterAndVerifyController extends Controller {
-    private $userModel;
+    private $userProfileModel;
+    private $userAccountModel;
+    private $userAuthenticationModel;
 
     public function __construct() {
-        require_once '../app/models/User.php';
-        $this->userModel = new User(require '../db.php');
+        $pdo = require __DIR__ . '/../../../db.php';
+        require_once __DIR__ . '/../../../app/models/UserProfile.php';
+        require_once __DIR__ . '/../../../app/models/UserAuthentication.php';
+        require_once __DIR__ . '/../../../app/models/UserAccount.php';
+        $this->userProfileModel = new UserProfile($pdo);
+        $this->userAccountModel = new UserAccount($pdo);
+        $this->userAuthenticationModel = new UserAuthentication($pdo);
     }
 
     public function register() {
@@ -30,13 +38,13 @@ class RegisterAndVerifyController extends Controller {
                 return;
             }
 
-            if (!$this->userModel->validateBirthDate($birth_date)) {
+            if (!$this->userAuthenticationModel->validateBirthDate($birth_date)) {
                 $error = "Musisz mieć co najmniej 18 lat.";
                 $this->view('register', ['error' => $error]);
                 return;
             }
 
-            $password_validation = $this->userModel->validatePassword($password);
+            $password_validation = $this->userAuthenticationModel->validatePassword($password);
             if ($password_validation !== true) {
                 $this->view('register', ['error' => $password_validation]);
                 return;
@@ -46,6 +54,7 @@ class RegisterAndVerifyController extends Controller {
             $secret = $g->generateSecret();
             $qrCodeUrl = GoogleQrUrl::generate($username, $secret, 'TwojaFirma');
 
+            session_start(); // Dodaj session_start()
             $_SESSION['registration_data'] = [
                 'username' => $username,
                 'email' => $email,
@@ -84,7 +93,7 @@ class RegisterAndVerifyController extends Controller {
 
             $g = new GoogleAuthenticator();
             if ($g->checkCode($registration_data['secret'], $totp_code)) {
-                $this->userModel->createUser(
+                $user_id = $this->userProfileModel->createUser(
                     $registration_data['username'],
                     $registration_data['email'],
                     $registration_data['password'],
@@ -93,6 +102,9 @@ class RegisterAndVerifyController extends Controller {
                     $registration_data['birth_date'],
                     $registration_data['secret']
                 );
+
+                // Inicjalizowanie konta użytkownika po rejestracji
+                $this->userAccountModel->createUserAccount($user_id);
 
                 unset($_SESSION['registration_data']);
                 header("Location: /2fatest/login");
@@ -104,4 +116,3 @@ class RegisterAndVerifyController extends Controller {
         }
     }
 }
-

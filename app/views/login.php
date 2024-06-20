@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Logowanie</title>
-    <link rel="stylesheet" href="/2fatest/public/css/styles.css">
+    <link rel="stylesheet" href="/2fatest/css/styles.css">
 </head>
 <body>
     <div class="container">
-        <a href="/2fatest/" class="back-button">&lt;</a>
         <div class="form-container">
+        <a href="/2fatest/" class="back-button">&lt;</a>
             <h2>Logowanie</h2>
-            <form method="post" action="/login">
+            <?php if (isset($message)): ?>
+                <p class="message"><?php echo $message; ?></p>
+            <?php endif; ?>
+            <form method="post" action="/2fatest/login">
                 <input type="text" name="username" placeholder="Nazwa użytkownika" required>
                 <input type="password" name="password" placeholder="Hasło" required>
                 <button type="submit">Zaloguj się</button>
                 <?php if (isset($error)): ?>
-                    <p><?php echo $error; ?></p>
+                    <p class="error"><?php echo $error; ?></p>
                 <?php endif; ?>
             </form>
         </div>

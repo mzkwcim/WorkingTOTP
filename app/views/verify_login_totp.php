@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Weryfikacja TOTP</title>
-    <link rel="stylesheet" href="/2fatest/public/css/styles.css">
+    <link rel="stylesheet" href="/2fatest/css/styles.css">
 </head>
 <body>
     <div class="container">
-        <a href="/2fatest/login" class="back-button">&lt; Wróć</a>
         <div class="form-container">
+        <a href="/2fatest/login" class="back-button">&lt;</a>
             <h1>Weryfikacja TOTP</h1>
             <form method="post" action="/verify_login_totp">
                 <label for="totp_code">Kod TOTP:</label>

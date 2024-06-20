@@ -52,6 +52,9 @@
     <div class="container">
         <a href="/2fatest/dashboard" class="back-button">&lt;</a>
         <h2>Zarządzanie użytkownikami</h2>
+        <?php if (isset($success)): ?>
+            <p><?php echo $success; ?></p>
+        <?php endif; ?>
         <table>
             <thead>
                 <tr>
@@ -74,7 +77,7 @@
                     <td><?php echo htmlspecialchars($user['last_name']); ?></td>
                     <td><?php echo htmlspecialchars($user['role']); ?></td>
                     <td>
-                        <form method="post" action="/2fatest/public/reset_password">
+                        <form method="post" action="/2fatest/reset_password">
                             <button type="submit" name="reset_password" value="<?php echo htmlspecialchars($user['id']); ?>">Resetuj hasło</button>
                         </form>
                     </td>

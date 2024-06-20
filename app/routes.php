@@ -25,4 +25,22 @@ $router->get('hidden/papaj', 'HiddenController@papaj');
 $router->get('all_operations', 'AuditorController@allOperations');
 $router->get('manage_users', 'AdminController@manageUsers');
 $router->post('reset_password', 'AdminController@resetPassword');
-$router->get('logout', 'UserController@logout'); // Dodaj tę linię
+$router->get('logout', 'UserController@logout');
+$router->get('reset_password', 'UserController@resetPasswordForm');
+$router->post('reset_password_action', 'UserController@handleResetPassword');
+$router->get('test', 'TestController@test');
+
+// Add routes for images
+$router->get('images/{imageName}', function($imageName) {
+    $imagePath = __DIR__ . "/../public/images/$imageName";
+    if (file_exists($imagePath)) {
+        $imageInfo = getimagesize($imagePath);
+        header("Content-Type: " . $imageInfo['mime']);
+        readfile($imagePath);
+        exit();
+    } else {
+        http_response_code(404);
+        echo "Image not found.";
+        exit();
+    }
+});

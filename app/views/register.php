@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Rejestracja</title>
-    <link rel="stylesheet" href="/2fatest/public/css/styles.css">
+    <link rel="stylesheet" href="/2fatest/css/styles.css">
     <script>
         function validateForm() {
             var password = document.forms["registerForm"]["password"].value;

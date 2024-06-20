@@ -1,59 +1,39 @@
 <?php
 
 class OtherControllers extends Controller {
+    private $userProfileModel;
+    private $userAccountModel;
+
+    public function __construct() {
+        $pdo = require '../db.php';
+        require_once '../app/models/UserProfile.php';
+        require_once '../app/models/UserAccount.php';
+        $this->userProfileModel = new UserProfile($pdo);
+        $this->userAccountModel = new UserAccount($pdo);
+    }
+
     public function account() {
         session_start();
         if (!isset($_SESSION['user_id'])) {
-            header("Location: /login");
+            header("Location: /2fatest/login");
             exit();
         }
 
-        require '../db.php';
-
         $user_id = $_SESSION['user_id'];
+        $userDetails = $this->userProfileModel->getFullUserDetails($user_id);
 
-        // Pobierz informacje o użytkowniku
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-        $stmt->execute([$user_id]);
-        $user = $stmt->fetch();
-
-        $stmt = $pdo->prepare("SELECT * FROM userAccount WHERE user_id = ?");
-        $stmt->execute([$user_id]);
-        $user_account = $stmt->fetch();
-
-        $full_name = $user['first_name'] . ' ' . $user['last_name'];
-        $email = $user['email'];
-        $account_number = $user_account['account_number'];
-        $role = $user['role']; // Pobranie roli użytkownika
-
-        $this->view('user/account', [
-            'full_name' => $full_name,
-            'email' => $email,
-            'account_number' => $account_number,
-            'role' => $role
-        ]);
+        $this->view('user/account', $userDetails);
     }
 
     public function settings() {
         session_start();
         if (!isset($_SESSION['user_id'])) {
-            header("Location: /login");
+            header("Location: /2fatest/login");
             exit();
         }
 
-        require '../db.php';
-
         $user_id = $_SESSION['user_id'];
-
-        // Pobierz aktualne dane użytkownika i konto
-        $stmt = $pdo->prepare("
-            SELECT u.username, ua.transaction_limit 
-            FROM users u
-            JOIN userAccount ua ON u.id = ua.user_id
-            WHERE u.id = ?
-        ");
-        $stmt->execute([$user_id]);
-        $user = $stmt->fetch();
+        $user = $this->userProfileModel->getUserWithAccountDetails($user_id);
 
         $this->view('user/settings', [
             'username' => $user['username'],
@@ -64,33 +44,18 @@ class OtherControllers extends Controller {
     public function handleSettings() {
         session_start();
         if (!isset($_SESSION['user_id'])) {
-            header("Location: /login");
+            header("Location: /2fatest/login");
             exit();
         }
-
-        require '../db.php';
 
         $user_id = $_SESSION['user_id'];
         $new_username = $_POST['username'];
         $transaction_limit = $_POST['transaction_limit'];
 
-        // Zaktualizuj dane użytkownika i limity
-        $stmt = $pdo->prepare("UPDATE users SET username = ? WHERE id = ?");
-        $stmt->execute([$new_username, $user_id]);
+        $this->userProfileModel->updateUser($user_id, $new_username);
+        $this->userAccountModel->updateUserAccount($user_id, $transaction_limit);
 
-        $stmt = $pdo->prepare("UPDATE userAccount SET transaction_limit = ? WHERE user_id = ?");
-        $stmt->execute([$transaction_limit, $user_id]);
-
-        // Pobierz zaktualizowane dane użytkownika
-        $stmt = $pdo->prepare("
-            SELECT u.username, ua.transaction_limit 
-            FROM users u
-            JOIN userAccount ua ON u.id = ua.user_id
-            WHERE u.id = ?
-        ");
-        $stmt->execute([$user_id]);
-        $user = $stmt->fetch();
-
+        $user = $this->userProfileModel->getUserWithAccountDetails($user_id);
         $success = "Dane zostały zaktualizowane.";
 
         $this->view('user/settings', [

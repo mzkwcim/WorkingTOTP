@@ -1,11 +1,11 @@
 <?php
 
-require '../vendor/autoload.php';
-require '../app/core/bootstrap.php';
+require_once __DIR__ . '/../app/core/bootstrap.php';
+require_once __DIR__ . '/../app/core/Router.php';
 
-$router = new Router;
+$router = new Router();
 
-require '../app/routes.php';
+require_once __DIR__ . '/../app/routes.php';
 
 $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
@@ -17,8 +17,5 @@ if (strpos($uri, $baseUri) === 0) {
 
 // Usuń wiodący ukośnik, jeśli jest obecny
 $uri = ltrim($uri, '/');
-
-// Debugging: wypisz przetworzony URI
-echo "Przetworzony URI w index.php: '$uri'<br>";
 
 $router->direct($uri, $_SERVER['REQUEST_METHOD']);
