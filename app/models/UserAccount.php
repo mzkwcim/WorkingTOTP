@@ -46,7 +46,6 @@ class UserAccount {
         $prefix = 'PL';
         $number = '';
 
-        // Generuj 26 cyfr
         for ($i = 0; $i < 26; $i++) {
             $number .= mt_rand(0, 9);
         }

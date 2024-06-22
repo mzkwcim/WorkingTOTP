@@ -46,6 +46,8 @@ class AdminController extends Controller {
             $users = $this->userProfileModel->getAllUsers();
             $success = "Rola użytkownika została zmieniona na: " . htmlspecialchars($new_role);
 
+            error_log('Success message set: ' . $success);  
+
             $this->view('admin/manage_users', [
                 'users' => $users,
                 'success' => $success

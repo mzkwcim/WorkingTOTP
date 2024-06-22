@@ -257,3 +257,52 @@ th {
 .detail-data {
     text-align: right;
 }
+
+select[name="role"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px; 
+    background-color: #fff;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease; 
+    outline: none;
+    position: relative;
+    z-index: 1;
+}
+
+select[name="role"]:hover {
+    background-color: #f0f0f0; 
+}
+
+option {
+    border-radius: 5px; 
+    padding: 10px;
+}
+
+select[name="role"] option {
+    padding: 10px;
+    border-radius: 5px;
+}
+
+select[name="role"] option:hover {
+    background-color: #e0e0e0; 
+}
+
+select[name="role"]::after {
+    content: '\25BC'; 
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+select[name="role"]::-ms-expand {
+    display: none;
+}
