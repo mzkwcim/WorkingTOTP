@@ -306,3 +306,28 @@ select[name="role"]::after {
 select[name="role"]::-ms-expand {
     display: none;
 }
+
+.lech {
+    opacity: 0;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.hidden-button {
+    opacity: 0;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

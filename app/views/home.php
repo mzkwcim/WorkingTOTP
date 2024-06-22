@@ -12,7 +12,17 @@
         <img src="/2fatest/images/Pomaranczowy_Lew.jpg" alt="Pomaranczowy_Lew">
         <br>
         <button onclick="window.location.href='/2fatest/login'">Logowanie</button>
-        <button onclick="window.location.href='/2fatest/register'">Rejestracja</button>
+        <button onclick="window.location.href='/2fatest/register'">Rejestracja</button><br>
+        <button id="hiddenButton" class="hidden-button" onclick="showModal()">Niewidoczny przycisk</button>
     </div>
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <img src="/2fatest/images/lech.jpg" alt="lech" class="modal-image">
+            <p>No tak...</p>
+        </div>
+    </div>
+
+    <script src="/2fatest/js/modal.js" defer></script>
 </body>
 </html>
