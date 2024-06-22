@@ -64,6 +64,7 @@ class UserController extends Controller {
             }
 
             $this->authModel->updatePassword($user_id, $new_password);
+
             session_destroy();
             session_start();
             $_SESSION['message'] = "Twoje hasło zostało zresetowane poprawnie.";

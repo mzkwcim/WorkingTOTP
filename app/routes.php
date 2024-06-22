@@ -30,7 +30,6 @@ $router->get('reset_password', 'UserController@resetPasswordForm');
 $router->post('reset_password_action', 'UserController@handleResetPassword');
 $router->get('test', 'TestController@test');
 
-// Add routes for images
 $router->get('images/{imageName}', function($imageName) {
     $imagePath = __DIR__ . "/../public/images/$imageName";
     if (file_exists($imagePath)) {

@@ -18,7 +18,6 @@ class AdminController extends Controller {
             exit();
         }
 
-        // Sprawdź, czy użytkownik ma uprawnienia administratora
         $user_id = $_SESSION['user_id'];
         $user = $this->userProfileModel->getUserById($user_id);
 

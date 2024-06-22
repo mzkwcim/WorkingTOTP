@@ -1,10 +1,8 @@
 RewriteEngine On
 
-# Zezwól na bezpośredni dostęp do plików w folderze public (w tym CSS, JS, obrazy)
 RewriteCond %{REQUEST_URI} ^/2fatest/public/
 RewriteRule ^(.*)$ - [L]
 
-# Przekieruj wszystko inne do index.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [L]

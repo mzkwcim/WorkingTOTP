@@ -54,7 +54,7 @@ class RegisterAndVerifyController extends Controller {
             $secret = $g->generateSecret();
             $qrCodeUrl = GoogleQrUrl::generate($username, $secret, 'TwojaFirma');
 
-            session_start(); // Dodaj session_start()
+            session_start();
             $_SESSION['registration_data'] = [
                 'username' => $username,
                 'email' => $email,
@@ -103,7 +103,6 @@ class RegisterAndVerifyController extends Controller {
                     $registration_data['secret']
                 );
 
-                // Inicjalizowanie konta użytkownika po rejestracji
                 $this->userAccountModel->createUserAccount($user_id);
 
                 unset($_SESSION['registration_data']);

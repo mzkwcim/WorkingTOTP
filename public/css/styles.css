@@ -1,8 +1,22 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    background: url('/2fatest/images/Pomaranczowy_Lew.jpg') no-repeat center center fixed;
+    background-size: cover;
+    position: relative;
+}
+
+.blur-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    filter: blur(8px);
+    z-index: -1;
 }
 
 .container {
@@ -11,8 +25,10 @@ body {
     padding: 20px;
     border: 2px solid #ccc;
     border-radius: 10px;
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.9);
     text-align: center;
+    position: relative;
+    z-index: 1;
 }
 
 .back-button-container {
@@ -67,8 +83,8 @@ label {
     margin: 10px 0 5px;
 }
 
-input[type="text"], input[type="password"] {
-    width: 100%;
+input[type="text"], input[type="password"], input[type="email"], input[type="date"], input[type="number"] {
+    width: calc(100% - 22px);
     padding: 10px;
     margin: 10px 0;
     border: 1px solid #ccc;
@@ -92,59 +108,30 @@ input[type="text"], input[type="password"] {
     padding: 20px;
     border: 2px solid #ccc;
     border-radius: 10px;
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.9);
 }
 
-.table-container{
+.table-container {
     position: relative;
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
     border: 2px solid #ccc;
     border-radius: 10px;
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.9);
 }
 
 .form-container h2 {
     text-align: center;
     margin-bottom: 20px;
 }
+
 .mysterious-button {
     opacity: 0; /* Ustaw przezroczystość na 0, aby był niewidoczny */
     pointer-events: all; /* Umożliwia interakcje z przyciskiem */
     position: absolute; /* Pozycjonowanie absolutne */
 }
 
-
-.form-container input[type="text"], 
-.form-container input[type="password"], 
-.form-container input[type="email"], 
-.form-container input[type="date"],
-.form-container input[type="number"]
- {
-    width: calc(100% - 22px);
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-}
-
-.form-container button {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    color: #fff;
-    background-color: #4CAF50;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.form-container button:hover {
-    background-color: #45a049;
-}
 .info {
     display: flex;
     align-items: center;
@@ -220,4 +207,3 @@ th {
 .transaction-outgoing {
     color: red;
 }
-

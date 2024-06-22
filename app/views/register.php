@@ -4,17 +4,6 @@
     <meta charset="UTF-8">
     <title>Rejestracja</title>
     <link rel="stylesheet" href="/2fatest/css/styles.css">
-    <script>
-        function validateForm() {
-            var password = document.forms["registerForm"]["password"].value;
-            var confirmPassword = document.forms["registerForm"]["password_confirm"].value;
-            if (password !== confirmPassword) {
-                alert("Hasła nie są zgodne.");
-                return false;
-            }
-            return true;
-        }
-    </script>
 </head>
 <body>
     <div class="container">
@@ -32,11 +21,9 @@
                 <input type="text" name="last_name" placeholder="Nazwisko" required>
                 <input type="date" name="birth_date" placeholder="Data urodzenia" required>
                 <button type="submit">Zarejestruj się</button>
-                <?php if (isset($error)): ?>
-                    <p><?php echo $error; ?></p>
-                <?php endif; ?>
             </form>
         </div>
     </div>
+    <script src="/2fatest/js/script.js"></script>
 </body>
 </html>

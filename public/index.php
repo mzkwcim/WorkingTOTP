@@ -9,13 +9,11 @@ require_once __DIR__ . '/../app/routes.php';
 
 $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
-// Usuń prefiks katalogu bazowego, jeśli jest obecny w URI
 $baseUri = '2fatest';
 if (strpos($uri, $baseUri) === 0) {
     $uri = substr($uri, strlen($baseUri));
 }
 
-// Usuń wiodący ukośnik, jeśli jest obecny
 $uri = ltrim($uri, '/');
 
 $router->direct($uri, $_SERVER['REQUEST_METHOD']);
