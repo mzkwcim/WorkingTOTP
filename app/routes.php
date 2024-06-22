@@ -29,6 +29,8 @@ $router->get('logout', 'UserController@logout');
 $router->get('reset_password', 'UserController@resetPasswordForm');
 $router->post('reset_password_action', 'UserController@handleResetPassword');
 $router->get('test', 'TestController@test');
+$router->post('change_role', 'AdminController@changeRole');
+
 
 $router->get('images/{imageName}', function($imageName) {
     $imagePath = __DIR__ . "/../public/images/$imageName";

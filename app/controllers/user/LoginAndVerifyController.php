@@ -28,7 +28,6 @@ class LoginAndVerifyController extends Controller {
                 $_SESSION['username'] = $username;
                 $_SESSION['secret'] = $user['secret'];
 
-                // Sprawdź, czy użytkownik musi zresetować hasło
                 if ($user['password_reset_required'] == 1) {
                     header("Location: /2fatest/reset_password");
                     exit();

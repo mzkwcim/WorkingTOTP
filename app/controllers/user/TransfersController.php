@@ -10,12 +10,12 @@ class TransfersController extends Controller {
         $pdo = require __DIR__ . '/../../../db.php';
         require_once __DIR__ . '/../../../app/models/Transfer.php';
         require_once __DIR__ . '/../../../app/models/UserProfile.php';
-        require_once __DIR__ . '/../../../app/models/UserAccount.php'; // Dodanie załadowania UserAccount
+        require_once __DIR__ . '/../../../app/models/UserAccount.php'; 
         require_once __DIR__ . '/../../../app/models/UserAuthentication.php';
 
         $this->transferModel = new Transfer($pdo);
         $this->userProfileModel = new UserProfile($pdo);
-        $this->userAccountModel = new UserAccount($pdo); // Inicjalizacja UserAccount
+        $this->userAccountModel = new UserAccount($pdo); 
         $this->userAuthenticationModel = new UserAuthentication($pdo);
     }
 
@@ -66,7 +66,6 @@ class TransfersController extends Controller {
             } elseif (!preg_match('/^PL\d{26}$/', $recipient_account)) {
                 $error = "Numer konta musi zaczynać się od 'PL' i mieć 26 cyfr.";
             } else {
-                // Przekieruj do strony potwierdzenia hasła
                 $_SESSION['recipient_name'] = $recipient_name;
                 $_SESSION['recipient_account'] = $recipient_account;
                 $_SESSION['transfer_title'] = $transfer_title;
@@ -77,7 +76,6 @@ class TransfersController extends Controller {
             }
         }
 
-        // Jeśli jest błąd, wróć do formularza z komunikatem o błędzie
         $this->view('user/new_transfer', [
             'error' => $error ?? null,
             'recipient_name' => $recipient_name ?? '',

@@ -1,0 +1,3 @@
+function mysteriousFunction() {
+    alert("CzyPies");
+}

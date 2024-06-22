@@ -4,12 +4,7 @@
     <meta charset="UTF-8">
     <title>Nowy przelew</title>
     <link rel="stylesheet" href="/2fatest/css/styles.css">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var today = new Date().toISOString().split('T')[0];
-            document.getElementsByName("transfer_date")[0].setAttribute('min', today);
-        });
-    </script>
+    <script src="/2fatest/js/dateChecker.js"></script>
 </head>
 <body>
     <div class="container">

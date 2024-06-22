@@ -5,13 +5,7 @@
     <title>Dashboard</title>
     <link rel="stylesheet" href="/2fatest/css/styles.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $(".transaction-row").click(function() {
-                $(this).next(".transaction-details").slideToggle();
-            });
-        });
-    </script>
+    <script src="/2fatest/js/toggle.js" defer></script>
 </head>
 <body>
     <div class="container">
@@ -44,31 +38,44 @@
                     <button type="submit">Wyloguj się</button>
                 </form>
             </div>
+            </div>
             <h3>Historia transakcji</h3>
             <div class="transactions-table">
-                <?php foreach ($transactions as $transaction): ?>
-                    <div class="transaction-row">
-                        <div class="transaction-name">
-                            <?php 
-                            echo $transaction['transfer_type'] == 'outgoing' ? $transaction['recipient_name'] : $transaction['sender_name']; 
-                            ?>
-                        </div>
-                        <div class="transaction-amount <?php echo $transaction['transfer_type'] == 'outgoing' ? 'transaction-outgoing' : 'transaction-incoming'; ?>">
-                            <?php echo $transaction['transfer_type'] == 'outgoing' ? '-' : '+'; ?>
-                            <?php echo number_format($transaction['amount'], 2, ',', ' '); ?> zł
-                        </div>
+            <?php foreach ($transactions as $transaction): ?>
+                <div class="transaction-row" onclick="toggleDetails(<?php echo $transaction['id']; ?>)">
+                    <div class="transaction-name">
+                        <?php 
+                        echo $transaction['transfer_type'] == 'outgoing' ? $transaction['recipient_name'] : $transaction['sender_name']; 
+                        ?>
                     </div>
-                    <div class="transaction-details" style="display: none;">
-                        <p><strong>Kwota:</strong> <?php echo number_format($transaction['amount'], 2, ',', ' '); ?> zł</p>
-                        <p><strong><?php echo $transaction['transfer_type'] == 'outgoing' ? 'Odbiorca' : 'Nadawca'; ?>:</strong> 
-                            <?php 
-                            echo $transaction['transfer_type'] == 'outgoing' ? $transaction['recipient_name'] : $transaction['sender_name']; 
-                            ?>
-                        </p>
-                        <p><strong>Data transakcji:</strong> <?php echo $transaction['transfer_date']; ?></p>
+                    <div class="transaction-amount <?php echo $transaction['transfer_type'] == 'outgoing' ? 'transaction-outgoing' : 'transaction-incoming'; ?>">
+                        <?php echo $transaction['transfer_type'] == 'outgoing' ? '-' : '+'; ?>
+                        <?php echo number_format($transaction['amount'], 2, ',', ' '); ?> zł
                     </div>
-                <?php endforeach; ?>
-            </div>
+                </div>
+                <div id="details-<?php echo $transaction['id']; ?>" class="transaction-details" style="display: none;">
+                    <div class="detail-row">
+                        <span class="detail-label">Kwota:</span>
+                        <span class="detail-data"><?php echo number_format($transaction['amount'], 2, ',', ' '); ?> zł</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label"><?php echo $transaction['transfer_type'] == 'outgoing' ? 'Odbiorca' : 'Nadawca'; ?>:</span>
+                        <span class="detail-data"><?php echo $transaction['transfer_type'] == 'outgoing' ? $transaction['recipient_name'] : $transaction['sender_name']; ?></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Numer konta odbiorcy:</span>
+                        <span class="detail-data"><?php echo htmlspecialchars($transaction['recipient_account']); ?></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Numer konta nadawcy:</span>
+                        <span class="detail-data"><?php echo htmlspecialchars($transaction['sender_account']); ?></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Data transakcji:</span>
+                        <span class="detail-data"><?php echo htmlspecialchars($transaction['transfer_date']); ?></span>
+                    </div>
+                </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </body>

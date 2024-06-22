@@ -31,6 +31,28 @@ class AdminController extends Controller {
         $this->view('admin/manage_users', ['users' => $users]);
     }
 
+    public function changeRole() {
+        session_start();
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /2fatest/login");
+            exit();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $user_id = $_POST['user_id'];
+            $new_role = $_POST['role'];
+            $this->userProfileModel->updateUserRole($user_id, $new_role);
+
+            $users = $this->userProfileModel->getAllUsers();
+            $success = "Rola użytkownika została zmieniona na: " . htmlspecialchars($new_role);
+
+            $this->view('admin/manage_users', [
+                'users' => $users,
+                'success' => $success
+            ]);
+        }
+    }
+
     public function resetPassword() {
         session_start();
         if (!isset($_SESSION['user_id'])) {

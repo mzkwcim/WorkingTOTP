@@ -13,6 +13,11 @@ class UserProfile {
         return $stmt->fetch();
     }
 
+    public function updateUserRole($user_id, $new_role) {
+        $stmt = $this->pdo->prepare('UPDATE users SET role = ? WHERE id = ?');
+        $stmt->execute([$new_role, $user_id]);
+    }
+
     public function createUser($username, $email, $password, $first_name, $last_name, $birth_date, $secret) {
         $stmt = $this->pdo->prepare("INSERT INTO users (username, email, password, first_name, last_name, birth_date, secret, role) VALUES (?, ?, ?, ?, ?, ?, ?, 'user')");
         $stmt->execute([$username, $email, password_hash($password, PASSWORD_BCRYPT), $first_name, $last_name, $birth_date, $secret]);

@@ -47,21 +47,22 @@ class OtherControllers extends Controller {
             header("Location: /2fatest/login");
             exit();
         }
-
+    
         $user_id = $_SESSION['user_id'];
         $new_username = $_POST['username'];
         $transaction_limit = $_POST['transaction_limit'];
-
+    
         $this->userProfileModel->updateUser($user_id, $new_username);
         $this->userAccountModel->updateUserAccount($user_id, $transaction_limit);
-
+    
         $user = $this->userProfileModel->getUserWithAccountDetails($user_id);
-        $success = "Dane zostały zaktualizowane.";
-
+        $success = "Limit jednorazowej transakcji został zmieniony na: " . htmlspecialchars($transaction_limit) . " zł";
+    
         $this->view('user/settings', [
             'username' => $user['username'],
             'transaction_limit' => $user['transaction_limit'],
             'success' => $success
         ]);
     }
+    
 }

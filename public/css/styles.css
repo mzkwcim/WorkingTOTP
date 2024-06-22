@@ -127,9 +127,9 @@ input[type="text"], input[type="password"], input[type="email"], input[type="dat
 }
 
 .mysterious-button {
-    opacity: 0; /* Ustaw przezroczystość na 0, aby był niewidoczny */
-    pointer-events: all; /* Umożliwia interakcje z przyciskiem */
-    position: absolute; /* Pozycjonowanie absolutne */
+    opacity: 0; 
+    pointer-events: all; 
+    position: absolute; 
 }
 
 .info {
@@ -206,4 +206,54 @@ th {
 
 .transaction-outgoing {
     color: red;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+}
+
+.detail-label {
+    font-weight: bold;
+}
+
+.detail-data {
+    text-align: right;
 }

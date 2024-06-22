@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <title>Informacje o koncie</title>
     <link rel="stylesheet" href="/2fatest/css/styles.css">
-    <script>
-        function mysteriousFunction() {
-            alert("CzyPies");
-        }
-    </script>
+    <script src="/2fatest/js/isPies.js" defer></script>
 </head>
 <body>
     <div class="container">
