@@ -5,10 +5,8 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 spl_autoload_register(function ($class) {
     $base_dir = __DIR__ . '/../';
 
-    // Zamień backslashes na slashes w namespace
     $class = str_replace('\\', '/', $class);
 
-    // Sprawdź ścieżki w katalogach
     $paths = [
         $base_dir . 'controllers/',
         $base_dir . 'controllers/user/',

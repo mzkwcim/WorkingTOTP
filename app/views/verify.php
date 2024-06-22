@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Weryfikacja</title>
-    <link rel="stylesheet" href="/2fatest/public/css/styles.css">
+    <link rel="stylesheet" href="/2fatest/css/styles.css">
 </head>
 <body>
     <div class="container">
-        <a href="/2fatest/register" class="back-button">&lt;</a>
         <div class="form-container">
+            <div class="back-button-container">
+                <a href="/2fatest/register" class="back-button">&lt;</a>
+            </div>
             <h2>Zeskanuj ten kod QR za pomocą Google Authenticator</h2>
             <div class="qr-code">
                 <img src="<?php echo htmlspecialchars($data['qrCodeUrl']); ?>" alt="Kod QR">

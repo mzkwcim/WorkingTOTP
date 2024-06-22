@@ -15,7 +15,6 @@ class Router {
     }
 
     public function direct($uri, $requestType) {
-        // Obsługa plików statycznych (CSS, JS, obrazy)
         if (preg_match('/\.(css|js|jpg|jpeg|png|gif|svg)$/', $uri)) {
             return $this->serveStaticFile($uri);
         }

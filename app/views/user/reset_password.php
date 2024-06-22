@@ -3,12 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Resetowanie hasła</title>
-    <link rel="stylesheet" href="/2fatest/public/css/styles.css">
-    <style>
-        .error {
-            color: red;
-        }
-    </style>
+    <link rel="stylesheet" href="/2fatest/css/styles.css">
 </head>
 <body>
     <div class="container">

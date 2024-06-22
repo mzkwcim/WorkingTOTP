@@ -8,7 +8,9 @@
 <body>
     <div class="container">
         <div class="form-container">
-        <a href="/2fatest/" class="back-button">&lt;</a>
+            <div class="back-button-container">
+                <a href="/2fatest/" class="back-button">&lt;</a>
+            </div>
             <h2>Logowanie</h2>
             <?php if (isset($message)): ?>
                 <p class="message"><?php echo $message; ?></p>

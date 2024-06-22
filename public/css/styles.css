@@ -15,23 +15,23 @@ body {
     text-align: center;
 }
 
-.back-button {
-    position: unset;
+.back-button-container {
+    position: absolute;
     top: 10px;
     left: 10px;
+}
+
+.back-button {
+    display: inline-block;
     padding: 5px 10px;
-    font-size: 14px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
     text-decoration: none;
-    color: #000;
-    font-weight: bold;
-    cursor: pointer;
+    border-radius: 5px;
 }
 
 .back-button:hover {
-    background-color: #e0e0e0;
+    background-color: #45a049;
 }
 
 h1 {
@@ -86,7 +86,18 @@ input[type="text"], input[type="password"] {
 }
 
 .form-container {
+    position: relative;
     max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    background-color: #fff;
+}
+
+.table-container{
+    position: relative;
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
     border: 2px solid #ccc;
@@ -98,11 +109,19 @@ input[type="text"], input[type="password"] {
     text-align: center;
     margin-bottom: 20px;
 }
+.mysterious-button {
+    opacity: 0; /* Ustaw przezroczystość na 0, aby był niewidoczny */
+    pointer-events: all; /* Umożliwia interakcje z przyciskiem */
+    position: absolute; /* Pozycjonowanie absolutne */
+}
+
 
 .form-container input[type="text"], 
 .form-container input[type="password"], 
 .form-container input[type="email"], 
-.form-container input[type="date"] {
+.form-container input[type="date"],
+.form-container input[type="number"]
+ {
     width: calc(100% - 22px);
     padding: 10px;
     margin: 10px 0;
@@ -126,3 +145,79 @@ input[type="text"], input[type="password"] {
 .form-container button:hover {
     background-color: #45a049;
 }
+.info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.info label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.info span {
+    flex: 1;
+    text-align: right;
+}
+
+table {
+    min-width: auto;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    word-wrap: break-word;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.balance {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.transactions-table {
+    margin-top: 20px;
+}
+
+.transaction-row {
+    background-color: #f2f2f2;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.transaction-details {
+    background-color: #fafafa;
+    padding: 10px;
+    border-left: 2px solid #ddd;
+    border-right: 2px solid #ddd;
+    border-bottom: 2px solid #ddd;
+    border-radius: 0 0 5px 5px;
+    margin-bottom: 10px;
+}
+
+.transaction-amount {
+    font-weight: bold;
+}
+
+.transaction-incoming {
+    color: green;
+}
+
+.transaction-outgoing {
+    color: red;
+}
+

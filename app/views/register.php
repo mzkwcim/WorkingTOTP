@@ -18,8 +18,10 @@
 </head>
 <body>
     <div class="container">
-        <a href="/2fatest/" class="back-button">&lt;</a>
         <div class="form-container">
+            <div class="back-button-container">
+                <a href="/2fatest/" class="back-button">&lt;</a>
+            </div>
             <h2>Rejestracja</h2>
             <form name="registerForm" method="post" onsubmit="return validateForm()">
                 <input type="text" name="username" placeholder="Nazwa użytkownika" required>

@@ -8,7 +8,9 @@
 <body>
     <div class="container">
         <div class="form-container">
-        <a href="/2fatest/login" class="back-button">&lt;</a>
+            <div class="back-button-container">
+                <a href="/2fatest/login" class="back-button">&lt;</a>
+            </div>
             <h1>Weryfikacja TOTP</h1>
             <form method="post" action="/verify_login_totp">
                 <label for="totp_code">Kod TOTP:</label>
